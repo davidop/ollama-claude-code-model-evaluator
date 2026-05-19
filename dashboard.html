@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ollama Claude Code Model Evaluator - Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+        .hardware-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .hw-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        .hw-label {
+            font-size: 0.9em;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .hw-value {
+            font-size: 1.3em;
+            color: #333;
+            font-weight: bold;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .card-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .recommendation {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+        .recommendation h2 {
+            color: #1a1a2e;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        .rec-text {
+            color: #1a1a2e;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .rec-highlight {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #1a1a2e;
+        }
+        .model-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1a1a2e;
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 5px 12px;
+            border-radius: 6px;
+        }
+        .command-box {
+            background: #1a1a2e;
+            color: #84fab0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            overflow-x: auto;
+            margin-top: 15px;
+            word-break: break-all;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .metric-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin: 3px;
+        }
+        .score-badge {
+            background: #667eea;
+            color: white;
+        }
+        .quality-badge {
+            background: #84fab0;
+            color: #1a1a2e;
+        }
+        .speed-badge {
+            background: #ffd93d;
+            color: #1a1a2e;
+        }
+        .latency-badge {
+            background: #ff6b6b;
+            color: white;
+        }
+        .benchmark-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        .tab-btn {
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            font-size: 0.95em;
+        }
+        .passed-tests {
+            background: #84fab0;
+            color: #1a1a2e;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .hardware-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 Ollama Claude Code Model Evaluator</h1>
+            <p class="subtitle">Dashboard de Benchmarks - Encuentra el mejor modelo para tu PC</p>
+            <div class="hardware-section">
+                <div class="hw-card">
+                    <div class="hw-label">CPU</div>
+                    <div class="hw-value">Intel i7-8650U</div>
+                    <div style="font-size: 0.85em; color: #666; margin-top: 5px;">8 cores, 2 threads/core</div>
+                </div>
+                <div class="hw-card">
+                    <div class="hw-label">RAM</div>
+                    <div class="hw-value">7 GB</div>
+                    <div style="font-size: 0.85em; color: #666; margin-top: 5px;">CPU-only mode</div>
+                </div>
+                <div class="hw-card">
+                    <div class="hw-label">GPU</div>
+                    <div class="hw-value">No detectada</div>
+                    <div style="font-size: 0.85em; color: #666; margin-top: 5px;">Usando CPU</div>
+                </div>
+                <div class="hw-card">
+                    <div class="hw-label">Fecha</div>
+                    <div class="hw-value" id="currentDate"></div>
+                    <div style="font-size: 0.85em; color: #666; margin-top: 5px;">Benchmarks ejecutados</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="recommendation">
+            <h2>⭐ Recomendación Personalizada</h2>
+            <div class="rec-text">
+                Con tu hardware (CPU-only, 7 GB RAM), tu PC es apto para modelos de <strong>3B a 7B parámetros</strong>.
+            </div>
+            <div class="rec-highlight">
+                <strong>Ganador General:</strong> <span class="model-name">qwen2.5-coder:14b</span>
+                <div style="margin-top: 10px; font-size: 0.95em;">
+                    Score: <strong>0.441</strong> | Calidad: <strong>66%</strong> | Tests pasados: <strong>2/4</strong>
+                    <br><em>Mejor calidad de código, aunque más lento. Ideal si prioriza precisión.</em>
+                </div>
+            </div>
+            <div class="rec-highlight">
+                <strong>Mejor Relación Velocidad/Calidad (8K contexto):</strong> <span class="model-name">qwen2.5-coder:3b</span>
+                <div style="margin-top: 10px; font-size: 0.95em;">
+                    Score: <strong>0.428</strong> | Velocidad: <strong>9.5 tok/s</strong> | Latencia: <strong>28.5s</strong>
+                    <br><em>Más rápido. Recomendado si necesita respuestas ágiles en tiempo real.</em>
+                </div>
+            </div>
+            <div style="margin-top: 20px;">
+                <div style="font-size: 0.95em; margin-bottom: 10px;"><strong>Comando para usar con Claude Code (recomendado: qwen2.5-coder:3b):</strong></div>
+                <div class="command-box">ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_API_KEY="" ANTHROPIC_BASE_URL=http://localhost:11434 claude --model qwen2.5-coder:3b</div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">📊 Contexto de Comparación</div>
+                <div class="benchmark-tabs">
+                    <button class="tab-btn active" onclick="switchTab('standard')">8K Contexto</button>
+                    <button class="tab-btn" onclick="switchTab('ctx16384')">16K Contexto + 14B</button>
+                </div>
+                
+                <div id="standard" class="tab-content active">
+                    <p style="color: #666; margin-bottom: 15px;">Benchmark estándar con 3 modelos a 8192 tokens de contexto. Configuración base recomendada.</p>
+                    <div class="chart-container">
+                        <canvas id="scoreChartStandard"></canvas>
+                    </div>
+                </div>
+                <div id="ctx16384" class="tab-content">
+                    <p style="color: #666; margin-bottom: 15px;">Benchmark con contexto extendido (16384) e inclusión del modelo 14B. Para mayor capacidad de razonamiento.</p>
+                    <div class="chart-container">
+                        <canvas id="scoreChartCtx"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">⚡ Velocidad (tokens/segundo)</div>
+                <div class="chart-container">
+                    <canvas id="speedChart"></canvas>
+                </div>
+                <p style="color: #666; font-size: 0.95em; margin-top: 15px;">
+                    <strong>Mayor = Mejor.</strong> Mide tokens generados por segundo. Más alto = respuestas más rápidas.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">🎯 Calidad de Código</div>
+                <div class="chart-container">
+                    <canvas id="qualityChart"></canvas>
+                </div>
+                <p style="color: #666; font-size: 0.95em; margin-top: 15px;">
+                    <strong>Mayor = Mejor.</strong> Basado en keyword matching y longitud de respuesta. 0-1 escala.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">⏱️ Latencia Promedio (segundos)</div>
+                <div class="chart-container">
+                    <canvas id="latencyChart"></canvas>
+                </div>
+                <p style="color: #666; font-size: 0.95em; margin-top: 15px;">
+                    <strong>Menor = Mejor.</strong> Tiempo de respuesta promedio. Menos tiempo = mejor experiencia interactiva.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">🏆 Ranking - Benchmark 8K</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Posición</th>
+                            <th>Modelo</th>
+                            <th>Score</th>
+                            <th>Calidad</th>
+                            <th>Vel.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableStandard"></tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🏆 Ranking - Benchmark 16K + 14B</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Posición</th>
+                            <th>Modelo</th>
+                            <th>Score</th>
+                            <th>Calidad</th>
+                            <th>Vel.</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableCtx"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">📋 Métricas Detalladas - Benchmark 8K</div>
+            <table id="detailedTableStandard">
+                <thead>
+                    <tr>
+                        <th>Modelo</th>
+                        <th>Score</th>
+                        <th>Calidad</th>
+                        <th>Tokens/seg</th>
+                        <th>Latencia</th>
+                        <th>Tests</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="card" style="margin-bottom: 40px;">
+            <div class="card-title">📋 Métricas Detalladas - Benchmark 16K</div>
+            <table id="detailedTableCtx">
+                <thead>
+                    <tr>
+                        <th>Modelo</th>
+                        <th>Score</th>
+                        <th>Calidad</th>
+                        <th>Tokens/seg</th>
+                        <th>Latencia</th>
+                        <th>Tests</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>Ollama Claude Code Model Evaluator | Dashboard generado automáticamente | Datos actualizados May 19, 2026</p>
+        </div>
+    </div>
+
+    <script>
+        const benchmarkStandard = [
+            {"model": "qwen2.5-coder:3b", "avg_tokens_per_sec": 9.49, "avg_latency_sec": 28.49, "quality_score": 0.53, "final_score": 0.428, "passed_tests": 1, "total_tests": 4},
+            {"model": "qwen2.5-coder:7b", "avg_tokens_per_sec": 3.86, "avg_latency_sec": 53.15, "quality_score": 0.573, "final_score": 0.406, "passed_tests": 1, "total_tests": 4},
+            {"model": "deepseek-coder:6.7b", "avg_tokens_per_sec": 3.31, "avg_latency_sec": 117.90, "quality_score": 0.43, "final_score": 0.308, "passed_tests": 1, "total_tests": 4}
+        ];
+
+        const benchmarkCtx = [
+            {"model": "qwen2.5-coder:14b", "avg_tokens_per_sec": 1.41, "avg_latency_sec": 135.42, "quality_score": 0.66, "final_score": 0.441, "passed_tests": 2, "total_tests": 4},
+            {"model": "qwen2.5-coder:3b", "avg_tokens_per_sec": 7.65, "avg_latency_sec": 41.13, "quality_score": 0.48, "final_score": 0.379, "passed_tests": 1, "total_tests": 4},
+            {"model": "qwen2.5-coder:7b", "avg_tokens_per_sec": 3.55, "avg_latency_sec": 94.89, "quality_score": 0.523, "final_score": 0.371, "passed_tests": 1, "total_tests": 4},
+            {"model": "deepseek-coder:6.7b", "avg_tokens_per_sec": 3.16, "avg_latency_sec": 141.75, "quality_score": 0.43, "final_score": 0.307, "passed_tests": 1, "total_tests": 4}
+        ];
+
+        function initCharts() {
+            // Score Chart Standard
+            new Chart(document.getElementById('scoreChartStandard'), {
+                type: 'bar',
+                data: {
+                    labels: benchmarkStandard.map(d => d.model),
+                    datasets: [{
+                        label: 'Score Final',
+                        data: benchmarkStandard.map(d => d.final_score),
+                        backgroundColor: ['#667eea', '#764ba2', '#ff6b6b'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {min: 0, max: 1}
+                    },
+                    plugins: {
+                        legend: {display: false}
+                    }
+                }
+            });
+
+            // Score Chart Ctx
+            new Chart(document.getElementById('scoreChartCtx'), {
+                type: 'bar',
+                data: {
+                    labels: benchmarkCtx.map(d => d.model),
+                    datasets: [{
+                        label: 'Score Final',
+                        data: benchmarkCtx.map(d => d.final_score),
+                        backgroundColor: ['#84fab0', '#667eea', '#764ba2', '#ff6b6b'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {min: 0, max: 1}
+                    },
+                    plugins: {
+                        legend: {display: false}
+                    }
+                }
+            });
+
+            // Speed Chart (Comparison)
+            const allModels = [...benchmarkStandard, ...benchmarkCtx.filter(m => m.model !== 'qwen2.5-coder:14b')];
+            const uniqueModels = Array.from(new Set(allModels.map(m => m.model)));
+            const speedData = uniqueModels.map(model => {
+                const std = benchmarkStandard.find(d => d.model === model);
+                const ctx = benchmarkCtx.find(d => d.model === model);
+                return {
+                    model,
+                    standard: std ? std.avg_tokens_per_sec : 0,
+                    ctx: ctx ? ctx.avg_tokens_per_sec : 0
+                };
+            });
+
+            new Chart(document.getElementById('speedChart'), {
+                type: 'bar',
+                data: {
+                    labels: speedData.map(d => d.model),
+                    datasets: [
+                        {
+                            label: '8K Contexto',
+                            data: speedData.map(d => d.standard),
+                            backgroundColor: '#667eea',
+                            borderRadius: 8
+                        },
+                        {
+                            label: '16K Contexto',
+                            data: speedData.map(d => d.ctx),
+                            backgroundColor: '#764ba2',
+                            borderRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {beginAtZero: true}
+                    }
+                }
+            });
+
+            // Quality Chart
+            new Chart(document.getElementById('qualityChart'), {
+                type: 'radar',
+                data: {
+                    labels: benchmarkStandard.map(d => d.model),
+                    datasets: [{
+                        label: 'Calidad (8K)',
+                        data: benchmarkStandard.map(d => d.quality_score),
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#667eea'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {min: 0, max: 1}
+                    }
+                }
+            });
+
+            // Latency Chart
+            new Chart(document.getElementById('latencyChart'), {
+                type: 'bar',
+                data: {
+                    labels: benchmarkStandard.map(d => d.model),
+                    datasets: [{
+                        label: 'Latencia (segundos)',
+                        data: benchmarkStandard.map(d => d.avg_latency_sec),
+                        backgroundColor: '#ff6b6b',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {beginAtZero: true}
+                    },
+                    plugins: {
+                        legend: {display: false}
+                    }
+                }
+            });
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function populateTables() {
+            // Standard benchmark table
+            const tableStandard = document.getElementById('tableStandard');
+            benchmarkStandard.forEach((d, i) => {
+                const row = `<tr>
+                    <td><strong>#${i + 1}</strong></td>
+                    <td>${d.model}</td>
+                    <td><span class="metric-badge score-badge">${d.final_score.toFixed(3)}</span></td>
+                    <td><span class="metric-badge quality-badge">${(d.quality_score * 100).toFixed(0)}%</span></td>
+                    <td><span class="metric-badge speed-badge">${d.avg_tokens_per_sec.toFixed(2)}</span></td>
+                </tr>`;
+                tableStandard.innerHTML += row;
+            });
+
+            // Ctx benchmark table
+            const tableCtx = document.getElementById('tableCtx');
+            benchmarkCtx.forEach((d, i) => {
+                const row = `<tr>
+                    <td><strong>#${i + 1}</strong></td>
+                    <td>${d.model}</td>
+                    <td><span class="metric-badge score-badge">${d.final_score.toFixed(3)}</span></td>
+                    <td><span class="metric-badge quality-badge">${(d.quality_score * 100).toFixed(0)}%</span></td>
+                    <td><span class="metric-badge speed-badge">${d.avg_tokens_per_sec.toFixed(2)}</span></td>
+                </tr>`;
+                tableCtx.innerHTML += row;
+            });
+
+            // Detailed tables
+            const detailedStandard = document.getElementById('detailedTableStandard').querySelector('tbody');
+            benchmarkStandard.forEach(d => {
+                const row = `<tr>
+                    <td><strong>${d.model}</strong></td>
+                    <td>${d.final_score.toFixed(3)}</td>
+                    <td>${d.quality_score.toFixed(3)}</td>
+                    <td>${d.avg_tokens_per_sec.toFixed(2)}</td>
+                    <td>${d.avg_latency_sec.toFixed(2)}s</td>
+                    <td><span class="passed-tests">${d.passed_tests}/${d.total_tests}</span></td>
+                </tr>`;
+                detailedStandard.innerHTML += row;
+            });
+
+            const detailedCtx = document.getElementById('detailedTableCtx').querySelector('tbody');
+            benchmarkCtx.forEach(d => {
+                const row = `<tr>
+                    <td><strong>${d.model}</strong></td>
+                    <td>${d.final_score.toFixed(3)}</td>
+                    <td>${d.quality_score.toFixed(3)}</td>
+                    <td>${d.avg_tokens_per_sec.toFixed(2)}</td>
+                    <td>${d.avg_latency_sec.toFixed(2)}s</td>
+                    <td><span class="passed-tests">${d.passed_tests}/${d.total_tests}</span></td>
+                </tr>`;
+                detailedCtx.innerHTML += row;
+            });
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            populateTables();
+            initCharts();
+        });
+    </script>
+</body>
+</html>
