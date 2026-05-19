@@ -10,7 +10,9 @@ English README. For Spanish, see [README.md](README.md).
 
 **Benchmark your local Ollama models and find the best one for coding tasks and Claude Code — in minutes, on your own hardware.**
 
-> If this project helps you choose the right local model for your machine, consider giving it a ⭐ star.
+> If this project helps you choose the right local model for your machine, consider giving it a ⭐ star and sharing your benchmark results.
+>
+> You can share yours using the [Benchmark result](.github/ISSUE_TEMPLATE/benchmark_result.md) issue template.
 
 Quick links:
 
@@ -19,7 +21,7 @@ Quick links:
 - 16384 context + 14b benchmark JSON: [results/benchmark-ctx16384-plus14b.json](results/benchmark-ctx16384-plus14b.json)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 
-Dashboard preview:
+## Dashboard preview
 
 ![Dashboard preview](docs/assets/dashboard-preview.svg)
 
@@ -222,6 +224,20 @@ Ready-to-use publication assets:
 - Social launch pack: [docs/release/launch-pack.md](docs/release/launch-pack.md)
 - Automated release checklist: [scripts/release-check.sh](scripts/release-check.sh)
 
+## Public launch checklist
+
+Once the technical release is published:
+
+- [ ] Configure the GitHub repository description (About → Description).
+- [ ] Configure the GitHub repository homepage (About → Website).
+- [ ] Add the recommended GitHub topics (About → Topics).
+- [ ] Convert `v0.1.0` from pre-release to stable release when ready.
+- [ ] Open at least one roadmap issue to show project direction.
+- [ ] Add a dashboard screenshot to the README.
+- [ ] Publish a LinkedIn post with a clear feedback and star request.
+
+> v0.1.0 can be promoted from pre-release to stable once metadata, roadmap issues and dashboard screenshot are ready.
+
 ## Roadmap
 
 - [ ] LM Studio / OpenAI-compatible provider support
@@ -233,6 +249,15 @@ Ready-to-use publication assets:
 - [ ] Hardware profile export
 
 See also the detailed roadmap docs in [docs/release/](docs/release/).
+
+### Suggested initial roadmap issues
+
+Issues recommended to open as initial roadmap tasks:
+
+- **Add LM Studio / OpenAI-compatible provider support** — extend the evaluator beyond Ollama to any OpenAI-compatible provider.
+- **Add vLLM provider support** — high-performance inference support for larger models.
+- **Improve benchmark scoring beyond keyword matching** — more accurate quality metrics beyond the current keyword detection.
+- **Add hardware-aware model recommendations** — auto-suggest models based on detected GPU and RAM.
 
 ## Contributing
 
