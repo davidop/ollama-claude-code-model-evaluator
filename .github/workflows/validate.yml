@@ -22,3 +22,9 @@ jobs:
 
       - name: CLI help check
         run: python eval_ollama_models.py --help
+
+      - name: Validate benchmark JSON files
+        run: python scripts/validate-benchmark-json.py
+
+      - name: Validate README local links
+        run: python scripts/validate-markdown-links.py

@@ -1,6 +1,34 @@
 # Ollama Claude Code Model Evaluator
 
+[![Validate](https://github.com/davidop/ollama-claude-code-model-evaluator/actions/workflows/validate.yml/badge.svg)](https://github.com/davidop/ollama-claude-code-model-evaluator/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![Ollama](https://img.shields.io/badge/runtime-Ollama-black.svg)](https://ollama.com/)
+
+Idioma:
+
+- Espanol: [README.md](README.md)
+- English: [README.en.md](README.en.md)
+
 Repositorio mínimo para evaluar qué modelo local de Ollama funciona mejor para tareas de desarrollo y uso con Claude Code.
+
+Compara calidad y velocidad en tu propio hardware, publica resultados reproducibles y usa el modelo ganador con Claude Code en un solo comando.
+
+Enlaces rapidos:
+
+- Dashboard interactivo: [dashboard.html](dashboard.html)
+- Benchmark estandar (JSON): [results/benchmark-standard.json](results/benchmark-standard.json)
+- Benchmark con contexto 16384 + 14b (JSON): [results/benchmark-ctx16384-plus14b.json](results/benchmark-ctx16384-plus14b.json)
+
+Vista previa del dashboard:
+
+![Dashboard preview](docs/assets/dashboard-preview.svg)
+
+## Por que importa
+
+- Menor costo: puedes elegir modelo local antes de gastar en APIs cloud.
+- Mayor privacidad: codigo y prompts se quedan en tu equipo.
+- Mejor ajuste real: decides segun tu hardware, no solo por rankings genericos.
 
 El benchmark mide:
 
@@ -66,6 +94,36 @@ Atajo con scripts incluidos:
 - Linux/macOS: `scripts/run-basic.sh`
 
 El archivo de salida recomendado para publicar es `results/benchmark-standard.json`.
+
+## Resultados recientes (este PC)
+
+Los siguientes resultados se generaron en este repositorio con los comandos estandar documentados.
+
+### Benchmark estandar (num_ctx=8192)
+
+| Rank | Modelo | Score | Quality | Tokens/s | Latencia (s) | Passed |
+| ---- | ------ | ----- | ------- | -------- | ------------ | ------ |
+| 1 | qwen2.5-coder:3b | 0.428 | 0.530 | 9.49 | 28.49 | 1/4 |
+| 2 | qwen2.5-coder:7b | 0.406 | 0.573 | 3.86 | 53.15 | 1/4 |
+| 3 | deepseek-coder:6.7b | 0.308 | 0.430 | 3.31 | 117.90 | 1/4 |
+
+Ganador estandar para este equipo: **qwen2.5-coder:3b**.
+
+### Benchmark calidad (num_ctx=16384, incluye 14b)
+
+| Rank | Modelo | Score | Quality | Tokens/s | Latencia (s) | Passed |
+| ---- | ------ | ----- | ------- | -------- | ------------ | ------ |
+| 1 | qwen2.5-coder:14b | 0.441 | 0.660 | 1.41 | 135.42 | 2/4 |
+| 2 | qwen2.5-coder:3b | 0.379 | 0.480 | 7.65 | 41.13 | 1/4 |
+| 3 | qwen2.5-coder:7b | 0.371 | 0.522 | 3.55 | 94.89 | 1/4 |
+| 4 | deepseek-coder:6.7b | 0.307 | 0.430 | 3.16 | 141.75 | 1/4 |
+
+Ganador por calidad en este equipo: **qwen2.5-coder:14b**.
+
+Lectura rapida:
+
+- Si priorizas velocidad y latencia: usa qwen2.5-coder:3b.
+- Si priorizas calidad final para Claude Code: usa qwen2.5-coder:14b.
 
 ## Uso básico
 
@@ -181,6 +239,17 @@ Antes de anunciar el repo:
 3. Verifica que CI pase en GitHub Actions (`Validate`).
 4. Abre al menos un issue de roadmap para mostrar dirección del proyecto.
 5. Publica release inicial (`v0.1.0`) con enlace al resultado JSON.
+
+Activos listos para publicar:
+
+- Notas de release v0.1.0: [docs/release/v0.1.0-release-notes.md](docs/release/v0.1.0-release-notes.md)
+- Roadmap 01 (alcance global): [docs/release/roadmap-01-english-readme-and-global-distribution.md](docs/release/roadmap-01-english-readme-and-global-distribution.md)
+- Roadmap 02 (expansion benchmark): [docs/release/roadmap-02-benchmark-suite-expansion.md](docs/release/roadmap-02-benchmark-suite-expansion.md)
+- Roadmap 03 (dashboard y assets): [docs/release/roadmap-03-dashboard-and-sharing-assets.md](docs/release/roadmap-03-dashboard-and-sharing-assets.md)
+- Roadmap 04 (guardrails CI): [docs/release/roadmap-04-ci-and-quality-guardrails.md](docs/release/roadmap-04-ci-and-quality-guardrails.md)
+- Launch pack para redes: [docs/release/launch-pack.md](docs/release/launch-pack.md)
+- Checklist automatizado de release: [scripts/release-check.sh](scripts/release-check.sh)
+- Guia operativa de publicacion v0.1.0: [docs/release/publish-v0.1.0.md](docs/release/publish-v0.1.0.md)
 
 ## Nota sobre la puntuación
 

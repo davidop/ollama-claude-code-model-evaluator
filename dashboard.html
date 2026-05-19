@@ -4,37 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ollama Claude Code Model Evaluator - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0"></script>
     <style>
+        :root {
+            --bg-1: #f3efe4;
+            --bg-2: #d2e6dd;
+            --ink: #17202a;
+            --muted: #44515e;
+            --card: rgba(255, 255, 255, 0.92);
+            --accent: #1b7f79;
+            --accent-2: #f2a65a;
+            --danger: #b85042;
+            --good: #3a7d44;
+        }
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Space Grotesk', sans-serif;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(242, 166, 90, 0.25), transparent 35%),
+                radial-gradient(circle at 90% 0%, rgba(27, 127, 121, 0.2), transparent 40%),
+                linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 100%);
             min-height: 100vh;
             padding: 20px;
+            color: var(--ink);
         }
         .container {
             max-width: 1400px;
             margin: 0 auto;
         }
         header {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card);
             border-radius: 12px;
             padding: 30px;
             margin-bottom: 30px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.55);
         }
         h1 {
-            color: #333;
+            color: var(--ink);
             margin-bottom: 10px;
             font-size: 2.5em;
+            letter-spacing: -0.03em;
         }
         .subtitle {
-            color: #666;
+            color: var(--muted);
             font-size: 1.1em;
         }
         .hardware-section {
@@ -47,18 +67,19 @@
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid var(--accent);
         }
         .hw-label {
             font-size: 0.9em;
-            color: #999;
+            color: #6d7782;
             text-transform: uppercase;
             font-weight: 600;
             margin-bottom: 5px;
+            letter-spacing: 0.06em;
         }
         .hw-value {
             font-size: 1.3em;
-            color: #333;
+            color: var(--ink);
             font-weight: bold;
         }
         .grid-2 {
@@ -74,33 +95,35 @@
             margin-bottom: 30px;
         }
         .card {
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--card);
             border-radius: 12px;
             padding: 25px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
         .card-title {
             font-size: 1.3em;
-            color: #333;
+            color: var(--ink);
             margin-bottom: 20px;
             font-weight: 600;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid var(--accent);
             padding-bottom: 10px;
         }
         .recommendation {
-            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            background: linear-gradient(135deg, #b9fbc0 0%, #eaf4f4 100%);
             border-radius: 12px;
             padding: 30px;
             margin-bottom: 30px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            animation: fadeInUp 0.5s ease-out;
         }
         .recommendation h2 {
-            color: #1a1a2e;
+            color: var(--ink);
             margin-bottom: 15px;
             font-size: 1.8em;
         }
         .rec-text {
-            color: #1a1a2e;
+            color: var(--ink);
             font-size: 1.1em;
             margin-bottom: 15px;
             line-height: 1.6;
@@ -110,27 +133,59 @@
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
-            border-left: 4px solid #1a1a2e;
+            border-left: 4px solid var(--accent);
         }
         .model-name {
             font-size: 1.5em;
             font-weight: bold;
-            color: #1a1a2e;
+            color: var(--ink);
             display: inline-block;
             background: rgba(255, 255, 255, 0.5);
             padding: 5px 12px;
             border-radius: 6px;
         }
         .command-box {
-            background: #1a1a2e;
-            color: #84fab0;
+            background: #15212d;
+            color: #d8ffe4;
             padding: 15px;
             border-radius: 8px;
-            font-family: 'Courier New', monospace;
+            font-family: 'IBM Plex Mono', monospace;
             font-size: 0.95em;
             overflow-x: auto;
             margin-top: 15px;
             word-break: break-all;
+        }
+        .muted-caption {
+            color: var(--muted);
+            font-size: 0.95em;
+            margin-top: 8px;
+        }
+        .share-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .btn {
+            border: none;
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.94;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-secondary {
+            background: var(--accent-2);
+            color: #222;
         }
         table {
             width: 100%;
@@ -138,7 +193,7 @@
             margin-top: 15px;
         }
         th {
-            background: #667eea;
+            background: var(--accent);
             color: white;
             padding: 15px;
             text-align: left;
@@ -160,19 +215,19 @@
             margin: 3px;
         }
         .score-badge {
-            background: #667eea;
+            background: var(--accent);
             color: white;
         }
         .quality-badge {
-            background: #84fab0;
-            color: #1a1a2e;
+            background: #b9fbc0;
+            color: #223a2a;
         }
         .speed-badge {
-            background: #ffd93d;
-            color: #1a1a2e;
+            background: #f2a65a;
+            color: #2d210a;
         }
         .latency-badge {
-            background: #ff6b6b;
+            background: var(--danger);
             color: white;
         }
         .benchmark-tabs {
@@ -193,8 +248,8 @@
             transition: all 0.3s;
         }
         .tab-btn.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
+            color: var(--accent);
+            border-bottom-color: var(--accent);
         }
         .tab-content {
             display: none;
@@ -209,16 +264,26 @@
         }
         .footer {
             text-align: center;
-            color: white;
+            color: var(--muted);
             margin-top: 40px;
             font-size: 0.95em;
         }
         .passed-tests {
-            background: #84fab0;
-            color: #1a1a2e;
+            background: #b9fbc0;
+            color: #223a2a;
             padding: 8px 12px;
             border-radius: 6px;
             font-weight: bold;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         @media (max-width: 768px) {
             h1 {
@@ -230,29 +295,35 @@
             .hardware-section {
                 grid-template-columns: 1fr;
             }
+            .recommendation, .card, header {
+                padding: 18px;
+            }
+            th, td {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🚀 Ollama Claude Code Model Evaluator</h1>
-            <p class="subtitle">Dashboard de Benchmarks - Encuentra el mejor modelo para tu PC</p>
+            <h1>Ollama Claude Code Model Evaluator</h1>
+            <p class="subtitle">Dashboard interactivo para elegir el mejor modelo local segun tu hardware</p>
             <div class="hardware-section">
                 <div class="hw-card">
                     <div class="hw-label">CPU</div>
-                    <div class="hw-value">Intel i7-8650U</div>
-                    <div style="font-size: 0.85em; color: #666; margin-top: 5px;">8 cores, 2 threads/core</div>
+                    <div class="hw-value" id="cpuValue">Intel i7-8650U</div>
+                    <div style="font-size: 0.85em; color: #666; margin-top: 5px;" id="cpuMeta">8 cores, 2 threads/core</div>
                 </div>
                 <div class="hw-card">
                     <div class="hw-label">RAM</div>
-                    <div class="hw-value">7 GB</div>
-                    <div style="font-size: 0.85em; color: #666; margin-top: 5px;">CPU-only mode</div>
+                    <div class="hw-value" id="ramValue">7 GB</div>
+                    <div style="font-size: 0.85em; color: #666; margin-top: 5px;" id="ramMeta">CPU-only mode</div>
                 </div>
                 <div class="hw-card">
                     <div class="hw-label">GPU</div>
-                    <div class="hw-value">No detectada</div>
-                    <div style="font-size: 0.85em; color: #666; margin-top: 5px;">Usando CPU</div>
+                    <div class="hw-value" id="gpuValue">No detectada</div>
+                    <div style="font-size: 0.85em; color: #666; margin-top: 5px;" id="gpuMeta">Usando CPU</div>
                 </div>
                 <div class="hw-card">
                     <div class="hw-label">Fecha</div>
@@ -263,36 +334,38 @@
         </header>
 
         <div class="recommendation">
-            <h2>⭐ Recomendación Personalizada</h2>
-            <div class="rec-text">
-                Con tu hardware (CPU-only, 7 GB RAM), tu PC es apto para modelos de <strong>3B a 7B parámetros</strong>.
+            <h2>Recomendacion Personalizada</h2>
+            <div class="rec-text" id="hardwareNarrative"></div>
+            <div class="rec-highlight">
+                <strong>Ganador por calidad:</strong> <span class="model-name" id="qualityWinnerModel"></span>
+                <div style="margin-top: 10px; font-size: 0.95em;" id="qualityWinnerStats"></div>
             </div>
             <div class="rec-highlight">
-                <strong>Ganador General:</strong> <span class="model-name">qwen2.5-coder:14b</span>
-                <div style="margin-top: 10px; font-size: 0.95em;">
-                    Score: <strong>0.441</strong> | Calidad: <strong>66%</strong> | Tests pasados: <strong>2/4</strong>
-                    <br><em>Mejor calidad de código, aunque más lento. Ideal si prioriza precisión.</em>
-                </div>
-            </div>
-            <div class="rec-highlight">
-                <strong>Mejor Relación Velocidad/Calidad (8K contexto):</strong> <span class="model-name">qwen2.5-coder:3b</span>
-                <div style="margin-top: 10px; font-size: 0.95em;">
-                    Score: <strong>0.428</strong> | Velocidad: <strong>9.5 tok/s</strong> | Latencia: <strong>28.5s</strong>
-                    <br><em>Más rápido. Recomendado si necesita respuestas ágiles en tiempo real.</em>
-                </div>
+                <strong>Ganador por velocidad diaria:</strong> <span class="model-name" id="speedWinnerModel"></span>
+                <div style="margin-top: 10px; font-size: 0.95em;" id="speedWinnerStats"></div>
             </div>
             <div style="margin-top: 20px;">
-                <div style="font-size: 0.95em; margin-bottom: 10px;"><strong>Comando para usar con Claude Code (recomendado: qwen2.5-coder:3b):</strong></div>
-                <div class="command-box">ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_API_KEY="" ANTHROPIC_BASE_URL=http://localhost:11434 claude --model qwen2.5-coder:3b</div>
+                <div style="font-size: 0.95em; margin-bottom: 10px;"><strong>Comando Claude Code recomendado para trabajo diario:</strong></div>
+                <div class="command-box" id="recommendedCommand"></div>
+                <div class="share-actions">
+                    <button class="btn btn-primary" onclick="copyRecommendedCommand()">Copiar comando</button>
+                    <button class="btn btn-secondary" onclick="copyShareSummary()">Copiar resumen para redes</button>
+                </div>
             </div>
+        </div>
+
+        <div class="card" style="margin-bottom: 30px;">
+            <div class="card-title">Share-ready Snapshot</div>
+            <p class="muted-caption">Resumen generado automaticamente para publicar en X, Reddit o un issue de resultados.</p>
+            <div class="command-box" id="shareSummary"></div>
         </div>
 
         <div class="grid-2">
             <div class="card">
                 <div class="card-title">📊 Contexto de Comparación</div>
                 <div class="benchmark-tabs">
-                    <button class="tab-btn active" onclick="switchTab('standard')">8K Contexto</button>
-                    <button class="tab-btn" onclick="switchTab('ctx16384')">16K Contexto + 14B</button>
+                    <button class="tab-btn active" onclick="switchTab('standard', this)">8K Contexto</button>
+                    <button class="tab-btn" onclick="switchTab('ctx16384', this)">16K Contexto + 14B</button>
                 </div>
                 
                 <div id="standard" class="tab-content active">
@@ -416,6 +489,14 @@
     </div>
 
     <script>
+        const hardwareProfile = {
+            cpu: "Intel i7-8650U",
+            cores: 8,
+            threadsPerCore: 2,
+            ramGb: 7,
+            gpu: "No detectada"
+        };
+
         const benchmarkStandard = [
             {"model": "qwen2.5-coder:3b", "avg_tokens_per_sec": 9.49, "avg_latency_sec": 28.49, "quality_score": 0.53, "final_score": 0.428, "passed_tests": 1, "total_tests": 4},
             {"model": "qwen2.5-coder:7b", "avg_tokens_per_sec": 3.86, "avg_latency_sec": 53.15, "quality_score": 0.573, "final_score": 0.406, "passed_tests": 1, "total_tests": 4},
@@ -428,6 +509,91 @@
             {"model": "qwen2.5-coder:7b", "avg_tokens_per_sec": 3.55, "avg_latency_sec": 94.89, "quality_score": 0.523, "final_score": 0.371, "passed_tests": 1, "total_tests": 4},
             {"model": "deepseek-coder:6.7b", "avg_tokens_per_sec": 3.16, "avg_latency_sec": 141.75, "quality_score": 0.43, "final_score": 0.307, "passed_tests": 1, "total_tests": 4}
         ];
+
+        function inferHardwareClass() {
+            if (hardwareProfile.gpu !== "No detectada") {
+                return "GPU";
+            }
+            if (hardwareProfile.ramGb <= 8) {
+                return "CPU compacta";
+            }
+            if (hardwareProfile.ramGb <= 16) {
+                return "CPU estandar";
+            }
+            return "CPU alta memoria";
+        }
+
+        function pickWinners() {
+            const qualityWinner = [...benchmarkCtx].sort((a, b) => b.final_score - a.final_score)[0];
+            const speedWinner = [...benchmarkStandard].sort((a, b) => b.final_score - a.final_score)[0];
+            return {qualityWinner, speedWinner};
+        }
+
+        function buildCommand(model) {
+            return `ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_API_KEY="" ANTHROPIC_BASE_URL=http://localhost:11434 claude --model ${model}`;
+        }
+
+        function updateHardwareCards() {
+            document.getElementById('cpuValue').textContent = hardwareProfile.cpu;
+            document.getElementById('cpuMeta').textContent = `${hardwareProfile.cores} cores, ${hardwareProfile.threadsPerCore} threads/core`;
+            document.getElementById('ramValue').textContent = `${hardwareProfile.ramGb} GB`;
+            document.getElementById('ramMeta').textContent = hardwareProfile.gpu === "No detectada" ? "CPU-only mode" : "GPU-assisted mode";
+            document.getElementById('gpuValue').textContent = hardwareProfile.gpu;
+            document.getElementById('gpuMeta').textContent = inferHardwareClass();
+        }
+
+        function renderRecommendation() {
+            const {qualityWinner, speedWinner} = pickWinners();
+            const hardwareClass = inferHardwareClass();
+
+            document.getElementById('hardwareNarrative').innerHTML =
+                `Perfil detectado: <strong>${hardwareClass}</strong> (${hardwareProfile.ramGb} GB RAM, ${hardwareProfile.gpu === "No detectada" ? "sin GPU" : "con GPU"}). ` +
+                `Para sesiones rapidas de pair-programming conviene priorizar baja latencia; para tareas complejas de refactor y reasoning conviene priorizar score y calidad.`;
+
+            document.getElementById('qualityWinnerModel').textContent = qualityWinner.model;
+            document.getElementById('qualityWinnerStats').innerHTML =
+                `Score: <strong>${qualityWinner.final_score.toFixed(3)}</strong> | Calidad: <strong>${(qualityWinner.quality_score * 100).toFixed(0)}%</strong> | Tests pasados: <strong>${qualityWinner.passed_tests}/${qualityWinner.total_tests}</strong><br>` +
+                `<em>Ideal para precision y tareas mas largas de codigo.</em>`;
+
+            document.getElementById('speedWinnerModel').textContent = speedWinner.model;
+            document.getElementById('speedWinnerStats').innerHTML =
+                `Score: <strong>${speedWinner.final_score.toFixed(3)}</strong> | Velocidad: <strong>${speedWinner.avg_tokens_per_sec.toFixed(2)} tok/s</strong> | Latencia: <strong>${speedWinner.avg_latency_sec.toFixed(2)}s</strong><br>` +
+                `<em>Ideal para iteraciones frecuentes y baja espera interactiva.</em>`;
+
+            document.getElementById('recommendedCommand').textContent = buildCommand(speedWinner.model);
+
+            const summary = [
+                "Benchmark local Ollama + Claude Code (este PC):",
+                `- Velocidad/latencia: ${speedWinner.model} | score ${speedWinner.final_score.toFixed(3)} | ${speedWinner.avg_tokens_per_sec.toFixed(2)} tok/s | ${speedWinner.avg_latency_sec.toFixed(2)}s`,
+                `- Calidad global: ${qualityWinner.model} | score ${qualityWinner.final_score.toFixed(3)} | quality ${(qualityWinner.quality_score * 100).toFixed(0)}%`,
+                "Repo: https://github.com/davidop/ollama-claude-code-model-evaluator"
+            ].join("\n");
+
+            document.getElementById('shareSummary').textContent = summary;
+        }
+
+        async function copyText(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (err) {
+                const area = document.createElement('textarea');
+                area.value = text;
+                document.body.appendChild(area);
+                area.select();
+                document.execCommand('copy');
+                document.body.removeChild(area);
+                return true;
+            }
+        }
+
+        function copyRecommendedCommand() {
+            copyText(document.getElementById('recommendedCommand').textContent);
+        }
+
+        function copyShareSummary() {
+            copyText(document.getElementById('shareSummary').textContent);
+        }
 
         function initCharts() {
             // Score Chart Standard
@@ -479,7 +645,7 @@
             });
 
             // Speed Chart (Comparison)
-            const allModels = [...benchmarkStandard, ...benchmarkCtx.filter(m => m.model !== 'qwen2.5-coder:14b')];
+            const allModels = [...benchmarkStandard, ...benchmarkCtx];
             const uniqueModels = Array.from(new Set(allModels.map(m => m.model)));
             const speedData = uniqueModels.map(model => {
                 const std = benchmarkStandard.find(d => d.model === model);
@@ -568,11 +734,11 @@
             });
         }
 
-        function switchTab(tab) {
+        function switchTab(tab, buttonEl) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tab).classList.add('active');
-            event.target.classList.add('active');
+            buttonEl.classList.add('active');
         }
 
         function populateTables() {
@@ -637,6 +803,8 @@
                 month: 'long',
                 day: 'numeric'
             });
+            updateHardwareCards();
+            renderRecommendation();
             populateTables();
             initCharts();
         });
