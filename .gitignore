@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+ollama_model_eval_results.json
+results.json
+.DS_Store
