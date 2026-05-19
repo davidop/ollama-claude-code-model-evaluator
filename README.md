@@ -11,7 +11,7 @@ Idioma:
 - Español: [README.md](README.md)
 - English: [README.en.md](README.en.md)
 
-**Evalua tus modelos locales de Ollama y encuentra el mejor para tareas de desarrollo y Claude Code — en minutos, en tu propio hardware.**
+**Evalúa tus modelos locales de Ollama y encuentra el mejor para tareas de desarrollo y Claude Code — en minutos, en tu propio hardware.**
 
 > Si este proyecto te ayuda a elegir el modelo local adecuado para tu máquina, considera darle una ⭐ estrella.
 
