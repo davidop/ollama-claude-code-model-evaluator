@@ -1,28 +1,36 @@
 ---
 name: Bug report
-about: Reporta un fallo del benchmark
+about: Report a benchmark failure or unexpected behavior
 labels: bug
 ---
 
-# Bug report
+## Summary
 
-## Resumen
+Describe the problem clearly.
 
-Describe el problema.
+## Steps to reproduce
 
-## Pasos para reproducir
+1. Command executed:
+   ```
+   python eval_ollama_models.py ...
+   ```
+2. Observed result:
+3. Expected result:
 
-1. Comando ejecutado:
-2. Resultado observado:
-3. Resultado esperado:
-
-## Entorno
+## Environment
 
 - OS:
-- Python:
-- Ollama version:
-- Modelos usados:
+- CPU:
+- GPU (if any):
+- RAM:
+- Python version:
+- Ollama version (`ollama --version`):
+- Models used:
 
 ## Logs
 
-Pega el error completo aqui.
+Paste the full error output here.
+
+```
+<paste logs>
+```

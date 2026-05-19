@@ -4,31 +4,40 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![Ollama](https://img.shields.io/badge/runtime-Ollama-black.svg)](https://ollama.com/)
+[![Claude Code](https://img.shields.io/badge/works%20with-Claude%20Code-blueviolet.svg)](https://docs.anthropic.com/en/docs/claude-code)
 
 Idioma:
 
-- Espanol: [README.md](README.md)
+- Español: [README.md](README.md)
 - English: [README.en.md](README.en.md)
 
-Repositorio mínimo para evaluar qué modelo local de Ollama funciona mejor para tareas de desarrollo y uso con Claude Code.
+**Evalúa tus modelos locales de Ollama y encuentra el mejor para tareas de desarrollo y Claude Code — en minutos, en tu propio hardware.**
 
-Compara calidad y velocidad en tu propio hardware, publica resultados reproducibles y usa el modelo ganador con Claude Code en un solo comando.
+> Si este proyecto te ayuda a elegir el modelo local adecuado para tu máquina, considera darle una ⭐ estrella.
 
 Enlaces rapidos:
 
 - Dashboard interactivo: [dashboard.html](dashboard.html)
 - Benchmark estandar (JSON): [results/benchmark-standard.json](results/benchmark-standard.json)
 - Benchmark con contexto 16384 + 14b (JSON): [results/benchmark-ctx16384-plus14b.json](results/benchmark-ctx16384-plus14b.json)
+- Changelog: [CHANGELOG.md](CHANGELOG.md)
 
 Vista previa del dashboard:
 
 ![Dashboard preview](docs/assets/dashboard-preview.svg)
 
+## Para quien es esto
+
+- **Desarrolladores que usan LLMs locales** y quieren saber qué modelo es más rápido y preciso para tareas de código en su hardware específico.
+- **Personas que prueban Claude Code con modelos locales** y necesitan una forma reproducible de elegir el modelo correcto sin prueba y error.
+- **Equipos que comparan rendimiento de modelos entre máquinas** — comparte tus resultados JSON y que otros los reproduzcan.
+- **AI engineers que hacen benchmark de modelos de código** que quieren una herramienta CLI ligera, sin dependencias, ejecutable en cualquier lugar.
+
 ## Por que importa
 
-- Menor costo: puedes elegir modelo local antes de gastar en APIs cloud.
-- Mayor privacidad: codigo y prompts se quedan en tu equipo.
-- Mejor ajuste real: decides segun tu hardware, no solo por rankings genericos.
+- **Menor costo:** evalua modelos locales antes de gastar en APIs cloud.
+- **Mayor privacidad:** codigo y prompts se quedan en tu equipo.
+- **Mejor ajuste real:** decides segun tu hardware, no solo por rankings genericos.
 
 El benchmark mide:
 
@@ -39,61 +48,54 @@ El benchmark mide:
 
 > El script no usa dependencias externas de Python. Funciona con la librería estándar.
 
-## Requisitos
+## Quick start
 
-- Python 3.10 o superior.
-- Ollama instalado.
-- Uno o varios modelos locales en Ollama, o usar `--pull` para descargarlos.
+> **Requisitos:** Python 3.10+, [Ollama](https://ollama.com/) instalado.
 
-## DevContainer (recomendado si tienes problemas con Python en Windows)
-
-Este repo incluye `/.devcontainer/devcontainer.json` para abrirlo con Python ya listo dentro de un contenedor.
-
-1. Instala Docker Desktop y la extension `Dev Containers` en VS Code.
-2. Con Ollama activo en tu host (`ollama serve`), abre el comando:
-   - `Dev Containers: Reopen in Container`
-3. Dentro del contenedor, ejecuta el benchmark normalmente:
-
-```bash
-python eval_ollama_models.py --num-ctx 8192 --output ./results/benchmark-standard.json --models qwen2.5-coder:3b qwen2.5-coder:7b deepseek-coder:6.7b
-```
-
-Nota: el DevContainer usa `OLLAMA_BASE_URL=http://host.docker.internal:11434` para conectarse al Ollama que corre en tu maquina host.
-
-## Instalación rápida
+**1. Inicia Ollama:**
 
 ```bash
 ollama serve
 ```
 
-En otra terminal:
+**2. Ejecuta el benchmark (Linux/macOS):**
 
 ```bash
-python eval_ollama_models.py --pull --models qwen2.5-coder:3b qwen2.5-coder:7b deepseek-coder:6.7b codellama:7b
+python eval_ollama_models.py --pull --num-ctx 8192 \
+  --output ./results/benchmark-standard.json \
+  --models qwen2.5-coder:3b qwen2.5-coder:7b deepseek-coder:6.7b
 ```
 
-## Benchmark estándar para publicar resultados
+**3. Usa el modelo ganador con Claude Code:**
 
-Si quieres una corrida útil para compartir en GitHub sin tardar horas, usa 3 modelos.
-
-Windows PowerShell:
-
-```powershell
-python .\eval_ollama_models.py --pull --num-ctx 8192 --output .\results\benchmark-standard.json --models qwen2.5-coder:3b qwen2.5-coder:7b deepseek-coder:6.7b
-```
-
-Linux/macOS:
+El script imprime el comando listo para usar al final:
 
 ```bash
-python eval_ollama_models.py --pull --num-ctx 8192 --output ./results/benchmark-standard.json --models qwen2.5-coder:3b qwen2.5-coder:7b deepseek-coder:6.7b
+ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_API_KEY="" ANTHROPIC_BASE_URL=http://localhost:11434 claude --model qwen2.5-coder:3b
 ```
 
-Atajo con scripts incluidos:
+Atajos con scripts incluidos:
 
 - Windows: `scripts/run-basic.ps1`
 - Linux/macOS: `scripts/run-basic.sh`
 
-El archivo de salida recomendado para publicar es `results/benchmark-standard.json`.
+## Ejemplo de salida
+
+Tras ejecutar el benchmark obtienes una tabla como esta:
+
+```
+Rank  Modelo                 Score   Quality  Tokens/s  Latencia(s)  Passed
+1     qwen2.5-coder:3b       0.428   0.530    9.49      28.49        1/4
+2     qwen2.5-coder:7b       0.406   0.573    3.86      53.15        1/4
+3     deepseek-coder:6.7b    0.308   0.430    3.31      117.90       1/4
+
+Ganador: qwen2.5-coder:3b
+
+Para usar con Claude Code:
+  ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_API_KEY="" ANTHROPIC_BASE_URL=http://localhost:11434 claude --model qwen2.5-coder:3b
+```
+
+Los resultados completos se guardan en JSON para compartir y reproducir.
 
 ## Resultados recientes (este PC)
 
@@ -122,8 +124,8 @@ Ganador por calidad en este equipo: **qwen2.5-coder:14b**.
 
 Lectura rapida:
 
-- Si priorizas velocidad y latencia: usa qwen2.5-coder:3b.
-- Si priorizas calidad final para Claude Code: usa qwen2.5-coder:14b.
+- Si priorizas velocidad y latencia: usa `qwen2.5-coder:3b`.
+- Si priorizas calidad final para Claude Code: usa `qwen2.5-coder:14b`.
 
 ## Uso básico
 
@@ -160,6 +162,21 @@ python eval_ollama_models.py --output results.json --models qwen2.5-coder:7b
 | NVIDIA 12 GB VRAM   | `qwen2.5-coder:7b`, `qwen2.5-coder:14b`   |
 | NVIDIA 16 GB VRAM   | `qwen2.5-coder:14b`                       |
 | NVIDIA 24 GB VRAM   | `qwen2.5-coder:32b`                       |
+
+## DevContainer (recomendado si tienes problemas con Python en Windows)
+
+Este repo incluye `/.devcontainer/devcontainer.json` para abrirlo con Python ya listo dentro de un contenedor.
+
+1. Instala Docker Desktop y la extension `Dev Containers` en VS Code.
+2. Con Ollama activo en tu host (`ollama serve`), abre el comando:
+   - `Dev Containers: Reopen in Container`
+3. Dentro del contenedor, ejecuta el benchmark normalmente:
+
+```bash
+python eval_ollama_models.py --num-ctx 8192 --output ./results/benchmark-standard.json --models qwen2.5-coder:3b qwen2.5-coder:7b deepseek-coder:6.7b
+```
+
+Nota: el DevContainer usa `OLLAMA_BASE_URL=http://host.docker.internal:11434` para conectarse al Ollama que corre en tu maquina host.
 
 ## Ejecutar desde el móvil contra el PC
 
@@ -230,27 +247,6 @@ $env:ANTHROPIC_BASE_URL="http://localhost:11434"
 claude --model qwen2.5-coder:7b
 ```
 
-## Checklist de publicación en GitHub
-
-Antes de anunciar el repo:
-
-1. Ejecuta el benchmark estándar y confirma que existe `results/benchmark-standard.json`.
-2. Copia al README un resumen corto con modelo ganador, score y tokens/s.
-3. Verifica que CI pase en GitHub Actions (`Validate`).
-4. Abre al menos un issue de roadmap para mostrar dirección del proyecto.
-5. Publica release inicial (`v0.1.0`) con enlace al resultado JSON.
-
-Activos listos para publicar:
-
-- Notas de release v0.1.0: [docs/release/v0.1.0-release-notes.md](docs/release/v0.1.0-release-notes.md)
-- Roadmap 01 (alcance global): [docs/release/roadmap-01-english-readme-and-global-distribution.md](docs/release/roadmap-01-english-readme-and-global-distribution.md)
-- Roadmap 02 (expansion benchmark): [docs/release/roadmap-02-benchmark-suite-expansion.md](docs/release/roadmap-02-benchmark-suite-expansion.md)
-- Roadmap 03 (dashboard y assets): [docs/release/roadmap-03-dashboard-and-sharing-assets.md](docs/release/roadmap-03-dashboard-and-sharing-assets.md)
-- Roadmap 04 (guardrails CI): [docs/release/roadmap-04-ci-and-quality-guardrails.md](docs/release/roadmap-04-ci-and-quality-guardrails.md)
-- Launch pack para redes: [docs/release/launch-pack.md](docs/release/launch-pack.md)
-- Checklist automatizado de release: [scripts/release-check.sh](scripts/release-check.sh)
-- Guia operativa de publicacion v0.1.0: [docs/release/publish-v0.1.0.md](docs/release/publish-v0.1.0.md)
-
 ## Nota sobre la puntuación
 
 La puntuación no pretende sustituir a un benchmark académico. Está pensada para una decisión práctica: qué modelo local es más útil para tareas de código en tu propia máquina.
@@ -261,3 +257,70 @@ La fórmula actual pondera:
 - 35% velocidad, normalizada contra 40 tokens/s.
 
 Puedes modificar los tests en la constante `TESTS` del script.
+
+## Checklist de publicación (v0.1.0)
+
+Pasos para publicar la primera release:
+
+1. Ejecuta el benchmark estándar y confirma que existe `results/benchmark-standard.json`.
+2. Actualiza la tabla "Resultados recientes" en ambos README.
+3. Ejecuta `bash scripts/release-check.sh` y confirma que todos los checks pasan.
+4. Verifica que CI pase en GitHub Actions (`Validate`).
+5. Actualiza [CHANGELOG.md](CHANGELOG.md): mueve los items de `[Unreleased]` bajo `[0.1.0]` con la fecha de hoy.
+6. Crea el tag `v0.1.0` y haz push.
+7. Crea un GitHub Release desde ese tag usando [docs/release/v0.1.0-release-notes.md](docs/release/v0.1.0-release-notes.md) como cuerpo.
+8. Adjunta `results/benchmark-standard.json` y `results/benchmark-ctx16384-plus14b.json` a la release.
+9. Abre al menos un issue de roadmap para mostrar dirección del proyecto.
+
+Activos listos para publicar:
+
+- Notas de release v0.1.0: [docs/release/v0.1.0-release-notes.md](docs/release/v0.1.0-release-notes.md)
+- Launch pack para redes: [docs/release/launch-pack.md](docs/release/launch-pack.md)
+- Checklist automatizado de release: [scripts/release-check.sh](scripts/release-check.sh)
+
+## Roadmap
+
+- [ ] Soporte para LM Studio / proveedor compatible con OpenAI
+- [ ] Soporte para vLLM
+- [ ] Tests de benchmark más ricos (.NET, Azure, Python, frontend)
+- [ ] Recomendaciones de modelos según hardware detectado
+- [ ] Mejoras al dashboard de benchmark (filtros, exportación)
+- [ ] Validación por GitHub Actions de resultados de benchmark
+- [ ] Exportación de perfil de hardware
+
+Consulta los docs de roadmap detallados en [docs/release/](docs/release/).
+
+## Contribuir
+
+Las contribuciones son bienvenidas: nuevos tests de benchmark, resultados de hardware, bug reports, soporte para nuevos proveedores.
+
+Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para instrucciones sobre:
+
+- Proponer nuevos modelos
+- Añadir tests de benchmark
+- Compartir resultados de hardware
+- Abrir bugs o mejoras
+
+Ideas para buenos primeros issues:
+
+- Add OpenAI-compatible provider support
+- Add LM Studio support
+- Add vLLM support
+- Add GitHub Actions for linting
+- Add richer benchmark tasks for .NET, Azure, Python and frontend code
+- Add hardware profile export
+
+## GitHub repository metadata
+
+Los siguientes valores deben configurarse manualmente en GitHub (no forman parte del código fuente):
+
+**Description:**
+> Benchmark local Ollama models for coding tasks and Claude Code. Compare quality, speed and latency on your own hardware.
+
+**Website / homepage:**
+> https://github.com/davidop/ollama-claude-code-model-evaluator
+
+**Topics:**
+`ollama` `claude-code` `local-ai` `llm` `benchmark` `coding-assistant` `qwen` `deepseek` `python` `developer-tools`
+
+Para configurarlos, ve a tu repositorio en GitHub → haz clic en el ⚙️ icono de engranaje junto a "About" en el panel derecho.
