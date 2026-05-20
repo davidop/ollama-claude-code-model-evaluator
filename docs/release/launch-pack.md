@@ -28,7 +28,6 @@ What it includes:
 - standard benchmark script
 - dashboard for visual comparison
 - hardware-oriented recommendations
-- mobile execution from Termux to local Ollama
 
 Repo:
 https://github.com/davidop/ollama-claude-code-model-evaluator

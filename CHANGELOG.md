@@ -17,7 +17,6 @@ _v0.1.0 can be promoted from pre-release to stable once metadata, roadmap issues
 - Quality, latency and tokens/sec scoring with weighted composite score
 - Claude Code command recommendation printed after benchmark run
 - JSON results export (`--output` flag)
-- PC and mobile execution support (Android Termux → local PC Ollama)
 - Bash helper script (`scripts/run-basic.sh`) for Linux/macOS
 - PowerShell helper script (`scripts/run-basic.ps1`) for Windows
 - DevContainer support (`.devcontainer/devcontainer.json`) for Python-ready environment

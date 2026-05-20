@@ -5,7 +5,6 @@ venv/
 .env
 ollama_model_eval_results.json
 results.json
-results/
 .DS_Store
 .vs/slnx.sqlite
 .vs/VSWorkspaceState.json

@@ -21,8 +21,38 @@ Enlaces rapidos:
 
 - Dashboard interactivo: [dashboard.html](dashboard.html)
 - Benchmark estandar (JSON): [results/benchmark-standard.json](results/benchmark-standard.json)
-- Benchmark con contexto 16384 + 14b (JSON): [results/benchmark-ctx16384-plus14b.json](results/benchmark-ctx16384-plus14b.json)
+- Benchmark con contexto 16384 + 14b (JSON opcional): `results/benchmark-ctx16384-plus14b.json`
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
+
+## Prueba rapida (2 minutos)
+
+Si quieres comprobar valor real del repo en el menor tiempo posible:
+
+1. Inicia Ollama en otra terminal:
+
+```bash
+ollama serve
+```
+
+2. Ejecuta smoke test (verifica entorno completo en 1 comando):
+
+```bash
+bash scripts/smoke-test.sh
+```
+
+3. Ejecuta benchmark + dashboard automatico:
+
+```bash
+bash scripts/run-basic.sh
+```
+
+4. Abre el dashboard:
+
+```bash
+$BROWSER /workspaces/ollama-claude-code-model-evaluator/dashboard.html
+```
+
+Si te ahorro tiempo para elegir modelo local, deja una estrella en GitHub.
 
 ## Dashboard preview
 
@@ -54,16 +84,25 @@ El benchmark mide:
 
 > **Requisitos:** Python 3.10+, [Ollama](https://ollama.com/) instalado.
 
-**1. Inicia Ollama:**
+**1. Inicia Ollama (en otra terminal):**
 
 ```bash
 ollama serve
 ```
 
+Deja esa terminal corriendo mientras ejecutas el benchmark.
+
+Comprobacion rapida del entorno:
+
+```bash
+python3 --version
+curl http://localhost:11434/api/tags
+```
+
 **2. Ejecuta el benchmark (Linux/macOS):**
 
 ```bash
-python eval_ollama_models.py --pull --num-ctx 8192 \
+python3 eval_ollama_models.py --pull --num-ctx 8192 \
   --output ./results/benchmark-standard.json \
   --models qwen2.5-coder:3b qwen2.5-coder:7b deepseek-coder:6.7b
 ```
@@ -81,12 +120,19 @@ Atajos con scripts incluidos:
 - Windows: `scripts/run-basic.ps1`
 - Linux/macOS: `scripts/run-basic.sh`
 
+Smoke test de 1 comando (recomendado antes de benchmark largo):
+
+- Linux/macOS: `bash scripts/smoke-test.sh`
+- Windows: `powershell -ExecutionPolicy Bypass -File scripts/smoke-test.ps1`
+
 Al usar esos atajos, ahora tambien se genera automaticamente:
 
 - `results/dashboard-data.js` con resultados + hardware detectado del PC.
 - snapshots historicos en `results/history/` con timestamp por ejecucion.
 
 Luego solo abre `dashboard.html` para ver el dashboard actualizado sin editar HTML manualmente.
+
+Nota: `scripts/run-basic.sh` ahora incluye prechecks (Python 3.10+, conectividad a Ollama y existencia de output JSON) para fallar rapido con mensajes claros.
 
 ## Ejemplo de salida
 
@@ -187,49 +233,6 @@ python eval_ollama_models.py --num-ctx 8192 --output ./results/benchmark-standar
 
 Nota: el DevContainer usa `OLLAMA_BASE_URL=http://host.docker.internal:11434` para conectarse al Ollama que corre en tu maquina host.
 
-## Ejecutar desde el móvil contra el PC
-
-El modelo corre en el PC. El móvil solo ejecuta el script y llama a la API de Ollama por red local.
-
-### En el PC
-
-Linux/macOS:
-
-```bash
-OLLAMA_HOST=0.0.0.0:11434 ollama serve
-```
-
-Windows PowerShell:
-
-```powershell
-$env:OLLAMA_HOST="0.0.0.0:11434"
-ollama serve
-```
-
-Obtén la IP local del PC.
-
-Windows:
-
-```powershell
-ipconfig
-```
-
-Linux/macOS:
-
-```bash
-ip addr
-```
-
-### En Android con Termux
-
-```bash
-pkg update
-pkg install python
-python eval_ollama_models.py --base-url http://192.168.1.50:11434 --models qwen2.5-coder:7b deepseek-coder:6.7b codellama:7b
-```
-
-Cambia `192.168.1.50` por la IP real de tu PC.
-
 ## Usar el modelo ganador con Claude Code
 
 El script imprime un comando similar a este:
@@ -278,7 +281,7 @@ Pasos para publicar la primera release:
 5. Actualiza [CHANGELOG.md](CHANGELOG.md): mueve los items de `[Unreleased]` bajo `[0.1.0]` con la fecha de hoy.
 6. Crea el tag `v0.1.0` y haz push.
 7. Crea un GitHub Release desde ese tag usando [docs/release/v0.1.0-release-notes.md](docs/release/v0.1.0-release-notes.md) como cuerpo.
-8. Adjunta `results/benchmark-standard.json` y `results/benchmark-ctx16384-plus14b.json` a la release.
+8. Adjunta `results/benchmark-standard.json` y, si existe, `results/benchmark-ctx16384-plus14b.json` a la release.
 9. Abre al menos un issue de roadmap para mostrar dirección del proyecto.
 
 Activos listos para publicar:

@@ -3,7 +3,7 @@
 Evaluate local Ollama models for coding workloads and Claude Code usage.
 
 The benchmark is intentionally dependency-free. It uses only Python's standard
-library so it can run on Windows, macOS, Linux and Android Termux.
+library so it can run on Windows, macOS and Linux.
 """
 
 from __future__ import annotations
@@ -143,7 +143,12 @@ def get_json(base_url: str, path: str, timeout: int = 30) -> dict[str, Any]:
 
 
 def list_local_models(base_url: str) -> list[str]:
-    data = get_json(base_url, "/api/tags")
+    try:
+        data = get_json(base_url, "/api/tags")
+    except urllib.error.URLError as ex:
+        print(f"Cannot reach Ollama at {base_url}: {ex}")
+        print("Start Ollama and retry, for example: ollama serve")
+        raise
     return [m["name"] for m in data.get("models", [])]
 
 
@@ -200,7 +205,14 @@ def evaluate_model(base_url: str, model: str, num_ctx: int, temperature: float) 
         try:
             data = post_json(base_url, "/api/generate", payload)
         except urllib.error.HTTPError as ex:
-            print(f"    HTTP error: {ex}")
+            if ex.code == 404:
+                print(f"    HTTP 404: model not found or unavailable ({model}).")
+                print(f"    Try: ollama pull {model}")
+            else:
+                print(f"    HTTP error {ex.code}: {ex}")
+            return None
+        except urllib.error.URLError as ex:
+            print(f"    Cannot reach Ollama at {base_url}: {ex}")
             return None
         except Exception as ex:  # noqa: BLE001
             print(f"    Error: {ex}")
@@ -279,6 +291,8 @@ def main() -> int:
 
     try:
         local_models = list_local_models(base_url)
+    except urllib.error.URLError:
+        return 1
     except Exception as ex:  # noqa: BLE001
         print(f"Cannot connect to Ollama at {base_url}: {ex}")
         return 1

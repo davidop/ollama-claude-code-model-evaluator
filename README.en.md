@@ -18,8 +18,38 @@ Quick links:
 
 - Interactive dashboard: [dashboard.html](dashboard.html)
 - Standard benchmark JSON: [results/benchmark-standard.json](results/benchmark-standard.json)
-- 16384 context + 14b benchmark JSON: [results/benchmark-ctx16384-plus14b.json](results/benchmark-ctx16384-plus14b.json)
+- 16384 context + 14b benchmark JSON (optional): `results/benchmark-ctx16384-plus14b.json`
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
+
+## Quick Trial (2 Minutes)
+
+If you want to evaluate this repo fast:
+
+1. Start Ollama in a separate terminal:
+
+```bash
+ollama serve
+```
+
+2. Run one-command environment verification:
+
+```bash
+bash scripts/smoke-test.sh
+```
+
+3. Run benchmark + automatic dashboard generation:
+
+```bash
+bash scripts/run-basic.sh
+```
+
+4. Open the dashboard:
+
+```bash
+$BROWSER /workspaces/ollama-claude-code-model-evaluator/dashboard.html
+```
+
+If this saves you setup time, consider starring the repo.
 
 ## Dashboard preview
 
@@ -51,16 +81,25 @@ The benchmark measures:
 
 > **Requirements:** Python 3.10+, [Ollama](https://ollama.com/) installed.
 
-**1. Start Ollama:**
+**1. Start Ollama (in a separate terminal):**
 
 ```bash
 ollama serve
 ```
 
+Keep that terminal running while you execute benchmarks.
+
+Quick setup verification:
+
+```bash
+python3 --version
+curl http://localhost:11434/api/tags
+```
+
 **2. Run the benchmark (Linux/macOS):**
 
 ```bash
-python eval_ollama_models.py --pull --num-ctx 8192 \
+python3 eval_ollama_models.py --pull --num-ctx 8192 \
   --output ./results/benchmark-standard.json \
   --models qwen2.5-coder:3b qwen2.5-coder:7b deepseek-coder:6.7b
 ```
@@ -78,12 +117,19 @@ Script shortcuts:
 - Windows: `scripts/run-basic.ps1`
 - Linux/macOS: `scripts/run-basic.sh`
 
+One-command smoke test (recommended before long benchmarks):
+
+- Linux/macOS: `bash scripts/smoke-test.sh`
+- Windows: `powershell -ExecutionPolicy Bypass -File scripts/smoke-test.ps1`
+
 When using these shortcuts, the repo now also auto-generates:
 
 - `results/dashboard-data.js` with benchmark data + detected PC hardware.
 - timestamped history snapshots in `results/history/`.
 
 Then open `dashboard.html` to view the updated dashboard without manual HTML edits.
+
+Note: `scripts/run-basic.sh` now includes preflight checks (Python 3.10+, Ollama connectivity, and output JSON presence) so failures are fast and actionable.
 
 ## Example Output
 
@@ -177,12 +223,6 @@ This repo includes `/.devcontainer/devcontainer.json` to open it with Python rea
 
 The DevContainer uses `OLLAMA_BASE_URL=http://host.docker.internal:11434` to connect to Ollama on the host machine.
 
-## Mobile Execution Against Your PC
-
-The model runs on your PC. Your phone only runs the script and calls Ollama over the local network.
-
-See [docs/mobile.md](docs/mobile.md).
-
 ## Use The Winning Model With Claude Code
 
 The script prints the ready-to-run command. Example:
@@ -222,7 +262,7 @@ Steps to publish the first release:
 5. Update [CHANGELOG.md](CHANGELOG.md): move `[Unreleased]` items under `[0.1.0]` with today's date.
 6. Create a git tag `v0.1.0` and push it.
 7. Create a GitHub Release from that tag, using [docs/release/v0.1.0-release-notes.md](docs/release/v0.1.0-release-notes.md) as the body.
-8. Attach `results/benchmark-standard.json` and `results/benchmark-ctx16384-plus14b.json` to the release.
+8. Attach `results/benchmark-standard.json` and, if present, `results/benchmark-ctx16384-plus14b.json` to the release.
 9. Open at least one roadmap issue to show project direction.
 
 Ready-to-use publication assets:

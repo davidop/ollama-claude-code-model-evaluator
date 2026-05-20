@@ -74,13 +74,22 @@ def validate_file(path: Path) -> None:
 
 
 def main() -> int:
-    targets = [
+    required_targets = [
         Path("results/benchmark-standard.json"),
+    ]
+
+    optional_targets = [
         Path("results/benchmark-ctx16384-plus14b.json"),
     ]
 
-    for target in targets:
+    for target in required_targets:
         validate_file(target)
+
+    for target in optional_targets:
+        if target.exists():
+            validate_file(target)
+        else:
+            print(f"SKIP: optional file not found: {target}")
 
     print("Benchmark JSON validation passed.")
     return 0
