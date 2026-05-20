@@ -78,6 +78,13 @@ Script shortcuts:
 - Windows: `scripts/run-basic.ps1`
 - Linux/macOS: `scripts/run-basic.sh`
 
+When using these shortcuts, the repo now also auto-generates:
+
+- `results/dashboard-data.js` with benchmark data + detected PC hardware.
+- timestamped history snapshots in `results/history/`.
+
+Then open `dashboard.html` to view the updated dashboard without manual HTML edits.
+
 ## Example Output
 
 After the benchmark completes, you get a ranked table like this:

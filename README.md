@@ -81,6 +81,13 @@ Atajos con scripts incluidos:
 - Windows: `scripts/run-basic.ps1`
 - Linux/macOS: `scripts/run-basic.sh`
 
+Al usar esos atajos, ahora tambien se genera automaticamente:
+
+- `results/dashboard-data.js` con resultados + hardware detectado del PC.
+- snapshots historicos en `results/history/` con timestamp por ejecucion.
+
+Luego solo abre `dashboard.html` para ver el dashboard actualizado sin editar HTML manualmente.
+
 ## Ejemplo de salida
 
 Tras ejecutar el benchmark obtienes una tabla como esta:
