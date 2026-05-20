@@ -7,3 +7,10 @@ ollama_model_eval_results.json
 results.json
 results/
 .DS_Store
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json
+.vs/ollama-claude-code-model-evaluator/CopilotIndices/18.6.39577.51406/CodeChunks.db
+.vs/ollama-claude-code-model-evaluator/CopilotIndices/18.6.39577.51406/SemanticSymbols.db
+.vs/ollama-claude-code-model-evaluator.slnx/FileContentIndex/f2a1a4b7-95de-48be-8588-3cf0187f5133.vsidx
+.vs/ollama-claude-code-model-evaluator.slnx/v18/.wsuo
+.vs/ollama-claude-code-model-evaluator.slnx/v18/DocumentLayout.json
