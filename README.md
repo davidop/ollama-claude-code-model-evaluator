@@ -11,7 +11,7 @@ Idioma:
 - Español: [README.md](README.md)
 - English: [README.en.md](README.en.md)
 
-**Evalúa tus modelos locales de Ollama y encuentra el mejor para tareas de desarrollo y Claude Code — en minutos, en tu propio hardware.**
+**¿No sabes qué modelo local usar para código en tu PC? Este repo lo mide por ti y te entrega un ganador reproducible en minutos.**
 
 > Si este proyecto te ayuda a elegir el modelo local adecuado para tu máquina, considera darle una ⭐ estrella y compartir tus resultados de benchmark.
 >
@@ -26,7 +26,7 @@ Enlaces rapidos:
 
 ## Prueba rapida (2 minutos)
 
-Si quieres comprobar valor real del repo en el menor tiempo posible:
+Objetivo: verificar en menos de 2 minutos que el repo funciona en tu maquina y que te devuelve un flujo accionable.
 
 1. Inicia Ollama en otra terminal:
 
@@ -51,6 +51,12 @@ bash scripts/run-basic.sh
 ```bash
 $BROWSER /workspaces/ollama-claude-code-model-evaluator/dashboard.html
 ```
+
+Resultado esperado:
+
+- `results/benchmark-standard.json` generado
+- `results/dashboard-data.js` generado
+- recomendacion de modelo + comando para Claude Code en consola y dashboard
 
 Si te ahorro tiempo para elegir modelo local, deja una estrella en GitHub.
 
@@ -187,25 +193,25 @@ Lectura rapida:
 Evaluar modelos ya instalados:
 
 ```bash
-python eval_ollama_models.py --models qwen2.5-coder:7b deepseek-coder:6.7b codellama:7b
+python3 eval_ollama_models.py --models qwen2.5-coder:7b deepseek-coder:6.7b codellama:7b
 ```
 
 Descargar modelos faltantes y evaluarlos:
 
 ```bash
-python eval_ollama_models.py --pull --models qwen2.5-coder:3b qwen2.5-coder:7b
+python3 eval_ollama_models.py --pull --models qwen2.5-coder:3b qwen2.5-coder:7b
 ```
 
 Usar más contexto:
 
 ```bash
-python eval_ollama_models.py --pull --num-ctx 16384 --models qwen2.5-coder:7b qwen2.5-coder:14b
+python3 eval_ollama_models.py --pull --num-ctx 16384 --models qwen2.5-coder:7b qwen2.5-coder:14b
 ```
 
 Guardar resultados en otro fichero:
 
 ```bash
-python eval_ollama_models.py --output results.json --models qwen2.5-coder:7b
+python3 eval_ollama_models.py --output results.json --models qwen2.5-coder:7b
 ```
 
 ## Recomendaciones por hardware
@@ -228,7 +234,7 @@ Este repo incluye `/.devcontainer/devcontainer.json` para abrirlo con Python ya 
 3. Dentro del contenedor, ejecuta el benchmark normalmente:
 
 ```bash
-python eval_ollama_models.py --num-ctx 8192 --output ./results/benchmark-standard.json --models qwen2.5-coder:3b qwen2.5-coder:7b deepseek-coder:6.7b
+python3 eval_ollama_models.py --num-ctx 8192 --output ./results/benchmark-standard.json --models qwen2.5-coder:3b qwen2.5-coder:7b deepseek-coder:6.7b
 ```
 
 Nota: el DevContainer usa `OLLAMA_BASE_URL=http://host.docker.internal:11434` para conectarse al Ollama que corre en tu maquina host.

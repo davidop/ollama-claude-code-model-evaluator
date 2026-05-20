@@ -35,6 +35,10 @@ def _save_history(path: Path, history_dir: Path, stamp: str) -> None:
     shutil.copy2(path, target)
 
 
+def _same_payload(a: list[dict[str, Any]], b: list[dict[str, Any]]) -> bool:
+    return json.dumps(a, sort_keys=True) == json.dumps(b, sort_keys=True)
+
+
 def _load_latest_history(history_dir: Path, stem: str) -> tuple[list[dict[str, Any]], str]:
     if not history_dir.exists():
         return [], ""
@@ -147,8 +151,11 @@ def generate_dashboard_data(
     output_path.write_text(js, encoding="utf-8")
 
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    _save_history(standard_path, history_dir, stamp)
-    _save_history(ctx_path, history_dir, stamp)
+    if not _same_payload(standard, previous_standard):
+        _save_history(standard_path, history_dir, stamp)
+        _save_history(ctx_path, history_dir, stamp)
+    else:
+        print("History snapshot skipped: standard benchmark unchanged from latest snapshot")
 
     print(f"Generated: {output_path}")
     print(f"History directory: {history_dir}")

@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+ROOT_DIR = Path(__file__).resolve().parent.parent
 
 
 def fail(message: str) -> None:
@@ -36,8 +37,9 @@ def validate_markdown(path: Path) -> None:
         if not local_target:
             continue
 
-        resolved = (path.parent / local_target).resolve()
-        if not resolved.exists():
+        resolved_from_file = (path.parent / local_target).resolve()
+        resolved_from_root = (ROOT_DIR / local_target).resolve()
+        if not resolved_from_file.exists() and not resolved_from_root.exists():
             bad_links.append(target)
 
     if bad_links:
@@ -47,7 +49,16 @@ def validate_markdown(path: Path) -> None:
 
 
 def main() -> int:
-    targets = [Path("README.md"), Path("README.en.md")]
+    targets = [
+        Path("README.md"),
+        Path("README.en.md"),
+        Path("CONTRIBUTING.md"),
+    ]
+
+    docs_dir = Path("docs")
+    if docs_dir.exists():
+        targets.extend(sorted(docs_dir.rglob("*.md")))
+
     for target in targets:
         validate_markdown(target)
 

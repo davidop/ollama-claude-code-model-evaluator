@@ -38,7 +38,7 @@ git push origin v0.1.0
 5. Description: paste content from [docs/release/v0.1.0-release-notes.md](docs/release/v0.1.0-release-notes.md).
 6. Upload assets:
    - [results/benchmark-standard.json](results/benchmark-standard.json)
-   - [results/benchmark-ctx16384-plus14b.json](results/benchmark-ctx16384-plus14b.json)
+  - `results/benchmark-ctx16384-plus14b.json` (optional, include if present)
    - [dashboard.html](dashboard.html) (optional)
 7. Publish release.
 
@@ -49,10 +49,15 @@ If GitHub CLI is available and authenticated:
 ```bash
 gh release create v0.1.0 \
   results/benchmark-standard.json \
-  results/benchmark-ctx16384-plus14b.json \
   dashboard.html \
   --title "v0.1.0" \
   --notes-file docs/release/v0.1.0-release-notes.md
+```
+
+If the extended benchmark file exists, append it as another asset:
+
+```bash
+results/benchmark-ctx16384-plus14b.json
 ```
 
 ## 6) Open roadmap issues

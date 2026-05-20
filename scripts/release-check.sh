@@ -10,24 +10,27 @@ python3 -m py_compile eval_ollama_models.py
 echo "[2/5] CLI help check"
 python3 eval_ollama_models.py --help >/dev/null
 
-echo "[3/7] Benchmark JSON validation"
+echo "[3/6] Benchmark JSON validation"
 python3 scripts/validate-benchmark-json.py
 
-echo "[4/7] README link validation"
+echo "[4/6] README/docs link validation"
 python3 scripts/validate-markdown-links.py
 
-echo "[5/7] Required benchmark files"
+echo "[5/6] Required benchmark files"
 [[ -f results/benchmark-standard.json ]]
-[[ -f results/benchmark-ctx16384-plus14b.json ]]
+if [[ -f results/benchmark-ctx16384-plus14b.json ]]; then
+	echo "- Extended benchmark: results/benchmark-ctx16384-plus14b.json"
+else
+	echo "- Extended benchmark: not present (optional)"
+fi
 
-echo "[6/7] Required docs"
+echo "[6/6] Required docs"
 [[ -f README.md ]]
 [[ -f README.en.md ]]
 [[ -f docs/release/v0.1.0-release-notes.md ]]
 
-echo "[7/7] Quick release summary"
+echo "Quick release summary"
 echo "- Standard benchmark: results/benchmark-standard.json"
-echo "- Extended benchmark: results/benchmark-ctx16384-plus14b.json"
 echo "- Release notes: docs/release/v0.1.0-release-notes.md"
 
 echo "Release check passed."

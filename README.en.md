@@ -8,7 +8,7 @@
 
 English README. For Spanish, see [README.md](README.md).
 
-**Benchmark your local Ollama models and find the best one for coding tasks and Claude Code — in minutes, on your own hardware.**
+**Not sure which local coding model to use on your machine? This repo benchmarks them and gives you a reproducible winner in minutes.**
 
 > If this project helps you choose the right local model for your machine, consider giving it a ⭐ star and sharing your benchmark results.
 >
@@ -23,7 +23,7 @@ Quick links:
 
 ## Quick Trial (2 Minutes)
 
-If you want to evaluate this repo fast:
+Goal: confirm in under 2 minutes that the repo works on your machine and returns an actionable result.
 
 1. Start Ollama in a separate terminal:
 
@@ -48,6 +48,12 @@ bash scripts/run-basic.sh
 ```bash
 $BROWSER /workspaces/ollama-claude-code-model-evaluator/dashboard.html
 ```
+
+Expected outcome:
+
+- `results/benchmark-standard.json` generated
+- `results/dashboard-data.js` generated
+- model recommendation + ready-to-run Claude Code command in terminal and dashboard
 
 If this saves you setup time, consider starring the repo.
 
@@ -182,25 +188,25 @@ Quick interpretation:
 Evaluate installed models:
 
 ```bash
-python eval_ollama_models.py --models qwen2.5-coder:7b deepseek-coder:6.7b codellama:7b
+python3 eval_ollama_models.py --models qwen2.5-coder:7b deepseek-coder:6.7b codellama:7b
 ```
 
 Pull missing models and evaluate:
 
 ```bash
-python eval_ollama_models.py --pull --models qwen2.5-coder:3b qwen2.5-coder:7b
+python3 eval_ollama_models.py --pull --models qwen2.5-coder:3b qwen2.5-coder:7b
 ```
 
 Use larger context:
 
 ```bash
-python eval_ollama_models.py --pull --num-ctx 16384 --models qwen2.5-coder:7b qwen2.5-coder:14b
+python3 eval_ollama_models.py --pull --num-ctx 16384 --models qwen2.5-coder:7b qwen2.5-coder:14b
 ```
 
 Save output to custom file:
 
 ```bash
-python eval_ollama_models.py --output results.json --models qwen2.5-coder:7b
+python3 eval_ollama_models.py --output results.json --models qwen2.5-coder:7b
 ```
 
 ## Hardware Recommendations
